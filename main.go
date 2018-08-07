@@ -2,37 +2,23 @@ package main
 
 import (
 	"fmt"
+	"github.com/julienschmidt/httprouter"
 	"log"
 	"net/http"
 )
 
-// func main() {
-// 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request){
-// 		fmt.Fprintf(w, "Server GO response")
-// 	})
+func Index(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
+	fmt.Fprint(w, "Welcome!\n")
+}
 
-// 	server := http.ListenAndServer(":4200", nil)
+func Hello(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
+	fmt.Fprintf(w, "hello, %s!\n", ps.ByName("name"))
+}
 
-// 	log.Fatal(server)
-// }
 func main() {
-  http.HandleFunc("/", handler) // each request calls handler
-  http.HandleFunc("/about", aboutHandler)
-  http.HandleFunc("/red", redColor)
-  log.Fatal(http.ListenAndServe("localhost:8000", nil))
-}
+	router := httprouter.New()
+	router.GET("/", Index)
+	router.GET("/hello/:name", Hello)
 
-// handler echoes the Path component of the requested URL.
-func handler(w http.ResponseWriter, r *http.Request) {
-  fmt.Fprintf(w, "URL.Path = %q\n", r.URL.Path)
-}
-
-// counter echoes the number of calls so far.
-func aboutHandler(w http.ResponseWriter, r *http.Request) {
-  fmt.Fprintf(w, "URL.Path = %q\n", r.URL.Path)
-    //...
-}
-
-func redColor(w http.ResponseWriter, r *http.Request) {
-  fmt.Fprintf(w, "roses are red")
+	log.Fatal(http.ListenAndServe(":8080", router))
 }
